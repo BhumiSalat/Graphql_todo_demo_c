@@ -2,6 +2,7 @@ import { Todo } from "../../schema/todo/todo.modal";
 import { toObjectId, toBase64, fromBase64 } from "../../common/mongoose";
 import _ from "lodash";
 import { fromGlobalId } from "graphql-relay";
+import { TodoModel } from "../../schema/todo/todo.inerface";
 
 class TodoRepository {
   private static instance: TodoRepository;
@@ -74,14 +75,35 @@ class TodoRepository {
     userId: string;
     edits: object;
   }) {
-    const updated = await Todo.updateOne(
-      { _id: toObjectId(todoId) },
-      { ...edits }
-    );
+    console.log({ _id: toObjectId(todoId) });
+    try {
+      // const updated = await Todo.updateOne(
+      //   { _id: toObjectId(todoId) },
+      //   { $set: edits },
+      //   { new: true }
+      // );
+      const updated = await Todo.findByIdAndUpdate(
+        toObjectId(todoId),
+        { $set: edits },
+        { new: true }
+      );
+      console.log(updated);
 
-    if (!updated) {
-      return { status: "FAILED", message: "Todo not found!" };
+      if (updated === null) {
+        throw new Error("Todo not found!!!");
+      }
+    } catch (e) {
+      throw new Error(e.message);
     }
+    // //console.log(Todo.findById(updated._id));
+    // if (updated._id === todoId) {
+    //   return { status: "SUCCESS", message: "Todo updated successfully!" };
+    // } else {
+    //   throw new Error("Todo not Found");
+    // }
+    // if (!updated) {
+    //   return { status: "FAILED", message: "Todo not found!" };
+    // }
     return { status: "SUCCESS", message: "Todo updated successfully!" };
   }
 

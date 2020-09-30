@@ -32,6 +32,7 @@ const GraphQLEditTodoMutation = mutationWithClientMutationId({
     //const { userId }: any = await ctx.getUserId();
     const cedit = typeof completed === "boolean" ? { completed } : {};
     const tedit = title ? { title } : {};
+
     return await ctx._todoRepository.editTodo({
       todoId: fromGlobalId(id).id,
       userId: "",
